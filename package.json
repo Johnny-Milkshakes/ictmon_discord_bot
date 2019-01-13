@@ -1,0 +1,12 @@
+{
+  "name": "ictmon-discord-bot",
+  "version": "0.1.0",
+  "description": "A Discord bot for displaying network statistics about the IOTA Ict network.",
+  "main": "bot.js",
+  "author": "Alex6323",
+  "license": "ISC",
+  "dependencies": {
+    "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+    "zmq": "^2.15.3"
+  }
+}
