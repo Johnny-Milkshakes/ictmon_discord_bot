@@ -6,7 +6,7 @@
   "author": "Alex6323",
   "license": "ISC",
   "dependencies": {
-    "discord.io": "https://github.com/woor/discord.io/tarball/gateway_v6",
+    "discord.js": "^11.4.2",
     "zmq": "^2.15.3"
   }
 }

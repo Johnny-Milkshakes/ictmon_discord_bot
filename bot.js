@@ -1,74 +1,50 @@
-var discord = require('discord.io');
-var auth = require('./auth.json');
-var zmq = require('zmq');
-var _channelID = '';
+const { Client, RichEmbed } = require('discord.js');
+const auth = require('./auth.json');
+const zmq = require('zmq');
+const socket = zmq.socket(`req`);
+
+socket.connect(`tcp://localhost:5560`);
+const bot = new Client();
 
 console.log('ictmon Discord bot started.');
 console.log('Trying to connect...');
-
-const socket = zmq.socket(`req`);
-socket.connect(`tcp://localhost:5560`);
-
-socket.on('message', function (tps) {
-	console.log('Response received');
-
-	var data = {
-		"to": _channelID,
-		"embed": {
-			"color": 532392,
-			"fields": [
-				{
-					"name": "TPS (1 minute)",
-					"value": `${tps}`,
-					"inline": true
-				},
-			]
-		}
-	};
-	bot.sendMessage(data);
+bot.on('ready', () => {
+  console.log('I am ready!');
 });
 
-function sendTpsRequest() {
+sendTpsRequest = async () => {
 	console.log('Sending tps request...');
-	socket.send('tps');
+  socket.send('tps');
+  await socket.on('message', (tps) => {
+    const embed = new RichEmbed()
+      .setTitle('TPS (1 minute)')
+      .setColor(0xFF0000)
+      .setDescription(`${tps}`);
+    return embed
+  })
 }
 
-var bot = new discord.Client({
-	token: auth.token,
-	autorun: true
+bot.on('message', async message => {
+
+  if (message.substring(0, 1) === '!') {
+    const args = message.substring(1).split(' ');
+    const cmd = args[0];
+
+    switch (cmd) {
+      case 'tps':
+        const response = await sendTpsRequest();
+        message.channel.send(response)
+        break;
+
+      case 'microhash':
+        message.channel.send("Let's not talk about that night...")
+        break;
+
+      case 'cfb' :
+        message.channel.send("Yes?")
+        break;
+    }
+  }
 });
 
-bot.on('ready', function (evt) {
-	console.log('Connected.');
-	console.log('Logged in as: ' + bot.username + ' - (' + bot.id + ')');
-});
-
-bot.on('message', function (user, userID, channelID, message, evt) {
-	if (message.substring(0, 1) == '!') {
-		var args = message.substring(1).split(' ');
-		var cmd = args[0];
-
-		args = args.splice(1);
-		switch (cmd) {
-			case 'tps': {
-				_channelID = channelID;
-				sendTpsRequest();
-				break;
-			}
-			case 'microhash': {
-				bot.sendMessage({
-					to: channelID,
-					message: "Let's not talk about that night..."
-				});
-				break;
-			}
-			case 'cfb': {
-				bot.sendMessage({
-					to: channelID,
-					message: "Yes?"
-				});
-				break;
-			}
-		}
-	}
-});
+bot.login(auth.token);
