@@ -1,13 +1,13 @@
 const util = require('util');
-const { Client, RichEmbed } = require('discord.js');
+const Discord = require('discord.js');
 const auth = require('./auth.json');
-const zmq = require('zmq');
-const socket = zmq.socket(`req`);
+var zmq = require('zeromq')
+  , socket = zmq.socket('push');
 
-socket.connect(`tcp://localhost:5560`);
-const bot = new Client();
+socket.bind('tcp://127.0.0.1:5560');
+const bot = new Discord.Client();
 
-const socketOnPromise = util.promisify(socket.on);
+const socketOnPromise = util.promisify(socket.on.bind(socket))
 
 console.log('ictmon Discord bot started.');
 console.log('Trying to connect...');
@@ -24,18 +24,19 @@ sendTpsRequest = async () => {
 }
 
 bot.on('message', async message => {
-
-  if (message.substring(0, 1) === '!') {
-    const args = message.substring(1).split(' ');
+  console.log(message.content.substring(0,1))
+  if (message.content.substring(0, 1) === '!') {
+    console.log("made it here!")
+    const args = message.content.substring(1).split(' ');
     const cmd = args[0];
 
     switch (cmd) {
       case 'tps':
-				const response = await sendTpsRequest();
-				const embed = new RichEmbed()
-				.setTitle('TPS (1 minute)')
-				.setColor(0xFF0000)
-				.setDescription(`${response}`);
+        const response = await sendTpsRequest();
+        const embed = new RichEmbed()
+        .setTitle('TPS (1 minute)')
+        .setColor(0xFF0000)
+        .setDescription(`${response}`);
         message.channel.send(embed);
         break;
 

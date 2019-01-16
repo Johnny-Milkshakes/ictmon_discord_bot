@@ -7,6 +7,6 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^11.4.2",
-    "zmq": "^2.15.3"
+    "zeromq": "^5.1.0"
   }
 }
