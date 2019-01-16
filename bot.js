@@ -1,10 +1,14 @@
+const util = require('util');
 const { Client, RichEmbed } = require('discord.js');
 const auth = require('./auth.json');
 const zmq = require('zmq');
 const socket = zmq.socket(`req`);
 
+
 socket.connect(`tcp://localhost:5560`);
 const bot = new Client();
+
+const socketOnPromise = util.promisify(socket.on);
 
 console.log('ictmon Discord bot started.');
 console.log('Trying to connect...');
@@ -14,14 +18,10 @@ bot.on('ready', () => {
 
 sendTpsRequest = async () => {
 	console.log('Sending tps request...');
-  socket.send('tps');
-  await socket.on('message', (tps) => {
-    const embed = new RichEmbed()
-      .setTitle('TPS (1 minute)')
-      .setColor(0xFF0000)
-      .setDescription(`${tps}`);
-    return embed
-  })
+	socket.send('tps');
+	
+	const tps = await socketOnPromise('message');
+	return tps;
 }
 
 bot.on('message', async message => {
@@ -32,8 +32,12 @@ bot.on('message', async message => {
 
     switch (cmd) {
       case 'tps':
-        const response = await sendTpsRequest();
-        message.channel.send(response)
+				const response = await sendTpsRequest();
+				const embed = new RichEmbed()
+				.setTitle('TPS (1 minute)')
+				.setColor(0xFF0000)
+				.setDescription(`${tps}`);
+        message.channel.send(embed)
         break;
 
       case 'microhash':
