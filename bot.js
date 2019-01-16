@@ -4,7 +4,6 @@ const auth = require('./auth.json');
 const zmq = require('zmq');
 const socket = zmq.socket(`req`);
 
-
 socket.connect(`tcp://localhost:5560`);
 const bot = new Client();
 
@@ -36,16 +35,16 @@ bot.on('message', async message => {
 				const embed = new RichEmbed()
 				.setTitle('TPS (1 minute)')
 				.setColor(0xFF0000)
-				.setDescription(`${tps}`);
-        message.channel.send(embed)
+				.setDescription(`${response}`);
+        message.channel.send(embed);
         break;
 
       case 'microhash':
-        message.channel.send("Let's not talk about that night...")
+        message.channel.send("Let's not talk about that night...");
         break;
 
       case 'cfb' :
-        message.channel.send("Yes?")
+        message.channel.send("Yes?");
         break;
     }
   }
