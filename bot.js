@@ -26,7 +26,6 @@ sendTpsRequest = async () => {
 bot.on('message', async message => {
   console.log(message.content.substring(0,1))
   if (message.content.substring(0, 1) === '!') {
-    console.log("made it here!")
     const args = message.content.substring(1).split(' ');
     const cmd = args[0];
 
