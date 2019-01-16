@@ -16,11 +16,11 @@ bot.on('ready', () => {
 });
 
 sendTpsRequest = async () => {
-	console.log('Sending tps request...');
-	socket.send('tps');
-	
-	const tps = await socketOnPromise('message');
-	return tps;
+  console.log('Sending tps request...');
+  socket.send('tps');
+  
+  const tps = await socketOnPromise('message');
+  return tps;
 }
 
 bot.on('message', async message => {
